@@ -18,7 +18,7 @@ router.get('/directorsMovies/:dirName', async (req, res) => {
     const nodes=[];
     
     const result = await session.run(
-        'MATCH (d:Director {dirNombre: $dirNombre})-[:Dirigio]->(p:Pelicula) return p',
+        'MATCH (d:Director {dirNombre: $dirNombre})-[:DIRIGIO]->(p:Pelicula) return p',
         {dirNombre: dirName}
     )
 
@@ -58,7 +58,7 @@ router.get('/movieActors/:movie', async (req, res) => {
 
     const nodes=[];
     //const session = driver.session()
-    const result = await session.run('MATCH (p:Pelicula {titulo: $movie})<-[:Actuo_en]-(a:Actor) return a',
+    const result = await session.run('MATCH (p:Pelicula {titulo: $movie})<-[:ACTUO_EN]-(a:Actor) return a',
           { movie: movie}
       )
     //await driver.close()
@@ -100,7 +100,7 @@ router.get('/actorsMovies/:actor', async (req, res) => {
     const nodes=[];
     //const session = driver.session()
     const result = await session.run(
-      'MATCH (a:Actor {nombre: $acNombre})-[:Actuo_en]->(p:Pelicula) return p',
+      'MATCH (a:Actor {nombre: $acNombre})-[:ACTUO_EN]->(p:Pelicula) return p',
       {acNombre: acName}
     )
 

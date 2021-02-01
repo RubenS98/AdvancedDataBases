@@ -1,2 +1,5 @@
 MATCH (n { name: 'Andy' })-[r:KNOWS]->()
 DELETE r
+
+
+bin/neo4j-admin import --database=neo4j --nodes=Usuario=import/Usuario.csv --nodes=Pelicula=import/NodoPelicula.csv --nodes=Director=import/NodoDirector.csv --nodes=Actor=import/NodoActor.csv --relationships=ACTUO_EN=import/Actuo_en.csv --relationships=DIRIGIO=import/Dirigio.csv
