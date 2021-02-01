@@ -1,0 +1,21 @@
+neo4j:
+  image: neo4j
+  restart: unless-stopped
+  ports:
+    - 7474:7474
+    - 7687:7687
+  volumes:
+    - ./db/dbms:/data/dbms
+    - ./db/import:/import
+  environment:
+    - NEO4J_AUTH=none
+server:
+  image: node:latest
+  working_dir: /Backend
+  command: npm start
+  ports:
+    - "9000:3000"
+  volumes:
+    - ./Backend:/Backend
+  links:
+    - neo4j

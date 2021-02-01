@@ -1,0 +1,287 @@
+:START_ID(Actor-ID),:END_ID(Pelicula-ID)
+Leonardo DiCaprio,The Revenant
+Leonardo DiCaprio,Once upon a time in Hollywood
+Leonardo DiCaprio,Titanic
+Leonardo DiCaprio,Inception
+Leonardo DiCaprio,The Wolf of Wall Street
+Leonardo DiCaprio,The Great Gatsby
+Brad Pitt,Once Upon a Time in Hollywood
+Brad Pitt,Moneyball
+Brad Pitt,Ocean's Eleven
+Brad Pitt,The Big Short
+Brad Pitt,Ocean's Twelve
+Brad Pitt,Deadpool 2
+Dwayne Johnson,Jumanji: Welcome to the jungle
+Dwayne Johnson,Hobbs & Shaw
+Dwayne Johnson,Baywatch
+Matthew McConaughey,Interstellar
+Matthew McConaughey,The Wolf of Wall Street
+Christian Bale,The Big Short
+Christian Bale,Batman Begins
+Christian Bale,The Dark Knight
+Christian Bale,The Dark Knight Rises
+Christian Bale,American Psycho
+Christian Bale,American Hustle
+Michael Caine,Batman Begins
+Michael Caine,The Dark Knight Rises
+Michael Caine,The Dark Knight
+Michael Caine,Inception
+Michael Caine,Interstellar
+Michael Caine,Now You See Me
+Michael Caine,Now You See Me 2
+Jeff Bridges,Iron Man
+Tom Holland,Spider-Man: Homecoming
+Tom Holland,Avengers: Infinity War
+Tom Holland,Avengers: Endgame
+Tom Holland,Captain America: Civil War
+Tom Holland,Spider-Man: Far From Home
+Samuel L. Jackson,Avengers
+Samuel L. Jackson,Avengers: Infinity War
+Samuel L. Jackson,Avengers: Endgame
+Samuel L. Jackson,Iron Man
+Samuel L. Jackson,Iron Man 2
+Samuel L. Jackson,Spider-Man: Far From Home
+Samuel L. Jackson,Avengers: Age of Ultron
+Ryan Gosling,The Big Short
+Ryan Gosling,"Crazy, Stupid, Love"
+Ryan Gosling,Blade Runner 2049
+Ryan Gosling,La La Land
+Ryan Gosling,The Notebook
+Heath Ledger,The Dark Knight
+Heath Ledger,Brokeback Mountain
+Heath Ledger,10 Things I Hate About You
+Robert Downey Jr.,Avengers
+Robert Downey Jr.,Spider-Man: Homecoming
+Robert Downey Jr.,Avengers: Infinity War
+Robert Downey Jr.,Iron Man
+Robert Downey Jr.,Iron Man 2
+Robert Downey Jr.,Iron Man 3
+Robert Downey Jr.,Avengers: Endgame
+Robert Downey Jr.,Avengers: Age of Ultron
+Robert Downey Jr.,Captain America: Civil War
+Robert Downey Jr.,Zodiac
+Tom Hardy,The Dark Knight Rises
+Tom Hardy,The Revenant
+Tom Hardy,Inception
+Tom Hardy,Mad Max: Fury Road
+Harrison Ford,Star Wars: A New Hope
+Harrison Ford,Star Wars: The Empire Strikes Back
+Harrison Ford,Star Wars: Return of the Jedi
+Harrison Ford,Blade Runner 2049
+Mark Hamill,Star Wars: A New Hope
+Mark Hamill,Star Wars: The Empire Strikes Back
+Mark Hamill,Star Wars: Return of the Jedi
+Benedict Cumberbatch,Doctor Strange
+Benedict Cumberbatch,Avengers: Infinity War
+Benedict Cumberbatch,Avengers: Endgame
+Michael Fassbender,X-Men: First Class
+Michael Fassbender,X-Men: Days of Future Past
+George Clooney,Ocean's Eleven
+George Clooney,Ocean's Twelve
+James McAvoy,X-Men: First Class
+James McAvoy,X-Men: Days of Future Past
+Willem Dafoe,Spider-Man
+Willem Dafoe,Spider-Man 2
+Willem Dafoe,Aquaman
+Willem Dafoe,John Wick
+Tobey Maguire,Spider-Man
+Tobey Maguire,Spider-Man 2
+Tobey Maguire,Spider-Man 3
+Tobey Maguire,The Great Gatsby
+Gary Oldman,The Dark Knight
+Gary Oldman,The Dark Knight Rises
+Gary Oldman,Batman Begins
+Gary Oldman,Harry Potter and the Prisioner of Azkaban
+Gary Oldman,Harry Potter and the Order of the Phoenix
+Natalie Portman,Star Wars: Attack of the Clones
+Natalie Portman,Star Wars: Revenge of the Sith
+Natalie Portman,Star Wars: The Phantom Menace
+Natalie Portman,Avengers: Endgame
+Meryl Streep,Mamma Mia!
+Meryl Streep,Mamma Mia! Here We Go Again
+Jennifer Lawrence,The Hunger Games
+Jennifer Lawrence,X-Men: Days of Future Past
+Jennifer Lawrence,X-Men: First Class
+Jennifer Lawrence,American Hustle
+Nicole Kidman,Aquaman
+Scarlett Johansson,Avengers: Infinity War
+Scarlett Johansson,Avengers: Endgame
+Scarlett Johansson,Avengers
+Scarlett Johansson,Avengers: Age of Ultron
+Scarlett Johansson,Iron Man 2
+Scarlett Johansson,Captain America: Civil War
+Scarlett Johansson,Captain America: Winter Soldier
+Julia Roberts,Ocean's Eleven
+Julia Roberts,Ocean's Twelve
+Julia Roberts,Mirror Mirror
+Emma Stone,Zombieland
+Emma Stone,Zombieland: Double tap
+Emma Stone,La La Land
+Emma Stone,The Amazing Spider-Man 2
+Emma Stone,"Crazy, Stupid, Love"
+Anne Hathaway,The Dark Knight Rises
+Anne Hathaway,Interstellar
+Margot Robbie,The Big Short
+Margot Robbie,Suicide Squad
+Ana de Armas,No Time to Die
+Ana de Armas,Knives Out
+Ana de Armas,Blade Runner 2049
+Jared Leto,Suicide Squad
+Jared Leto,American Psycho
+Jared Leto,Blade Runner 2049
+Emma Watson,Beauty and the Beast
+Emma Watson,Harry Potter and the Philosopher's Stone
+Emma Watson,Harry Potter and the Chamber of Secrets
+Emma Watson,Harry Potter and the Prisioner of Azkaban
+Emma Watson,Harry Potter and the Goblet of Fire
+Emma Watson,Harry Potter and the Order of the Phoenix
+Emma Watson,Harry Potter and the Half-Blood Prince
+Emma Watson,Harry Potter and the Deathly Hallows: Part 1
+Emma Watson,Harry Potter and the Deathly Hallows: Part 2
+Rachel McAdams,Doctor Strange
+Rachel McAdams,The Vow
+Rachel McAdams,The Notebook
+Gal Gadot,Wonder Woman
+Gal Gadot,Justice League
+Gal Gadot,Batman v Superman: Dawn of Justice
+Ben Affleck,Justice League
+Ben Affleck,Suicide Squad
+Ben Affleck,Batman v Superman: Dawn of Justice
+Henry Cavill,Justice League
+Henry Cavill,Batman v Superman: Dawn of Justice
+Henry Cavill,Man of Steel
+Henry Cavill,The Man from U.N.C.L.E.
+Amy Adams,Justice League
+Amy Adams,Arrival
+Amy Adams,Batman v Superman: Dawn of Justice
+Amy Adams,Man of Steel
+Amy Adams,American Hustle
+Gwyneth Paltrow,Iron Man
+Gwyneth Paltrow,Iron Man 2
+Gwyneth Paltrow,Iron Man 3
+Gwyneth Paltrow,Avengers: Endgame
+Gwyneth Paltrow,Avengers
+Gwyneth Paltrow,Spider-Man: Homecoming
+Gwyneth Paltrow,Spider-Man: Far From Home
+Chris Hemsworth,Avengers
+Chris Hemsworth,Avengers: Age of Ultron
+Chris Hemsworth,Avengers: Infinity War
+Chris Hemsworth,Avengers: Endgame
+Eiza González,Baby Driver
+Ryan Reynolds,Deadpool
+Ryan Reynolds,Deadpool 2
+Ryan Reynolds,Hobbs & Shaw
+Jason Statham,Hobbs & Shaw
+Keanu Reeves,Matrix
+Keanu Reeves,John Wick
+Keanu Reeves,John Wick: Chapter 2
+Keanu Reeves,John Wick: Chapter 3 - Parabellum
+Lily James,Cinderella
+Lily James,Baby Driver
+Lily James,Mamma Mia! Here We Go Again
+Mark Ruffalo,Avengers
+Mark Ruffalo,Avengers: Age of Ultron
+Mark Ruffalo,Avengers: Infinity War
+Mark Ruffalo,Avengers: Endgame
+Mark Ruffalo,Zodiac
+Charlize Theron,Mad Max: Fury Road
+Jonah Hill,Moneyball
+Jonah Hill,The Wolf of Wall Street
+Jonah Hill,21 Jump Street
+Jonah Hill,22 Jump Street
+Chris Evans,Avengers
+Chris Evans,Knives Out
+Chris Evans,Avengers: Age of Ultron
+Chris Evans,Avengers: Infinity War
+Chris Evans,Avengers: Endgame
+Chris Evans,Captain America: The First Avenger
+Chris Evans,Captain America: Winter Soldier
+Chris Evans,Captain America: Civil War
+Chris Evans,Spider-Man: Homecoming
+Hayden Christensen,Star Wars: Attack of the Clones
+Hayden Christensen,Star Wars: Revenge of the Sith
+Hayden Christensen,Star Wars: The Phantom Menace
+Ewan McGregor,Star Wars: Attack of the Clones
+Ewan McGregor,Star Wars: Revenge of the Sith
+Ewan McGregor,Star Wars:The Phantom Menace
+Chris Pine,Wonder Woman
+Channing Tatum,21 Jump Street
+Channing Tatum,22 Jump Street
+Channing Tatum,The Vow
+Daniel Craig,No Time to Die
+Daniel Craig,Knives Out
+Andrew Garfield,The Amazing Spider-Man
+Andrew Garfield,The Amazing Spider-Man 2
+Andrew Garfield,The Social Network
+Laurence Fishburne,Batman v Superman: Dawn of Justice
+Laurence Fishburne,Man of Steel
+Laurence Fishburne,Matrix
+Laurence Fishburne,John Wick
+Laurence Fishburne,John Wick: Chapter 2
+Laurence Fishburne,John Wick: Chapter 3 - Parabellum
+Jake Gyllenhaal,Brokeback Mountain
+Jake Gyllenhaal,Zodiac
+Jake Gyllenhaal,Spider-Man: Far From Home
+Hugh Jackman,X-Men: Days of Future Past
+Hugh Jackman,The Greatest Showman
+Hugh Jackman,X-Men: First Class
+Jason Momoa,Batman v Superman: Dawn of Justice
+Jason Momoa,Justice League
+Jason Momoa,Aquaman
+Ice Cube,21 Jump Street
+Ice Cube,22 Jump Street
+Daniel Radcliffe,Harry Potter and the Philosopher's Stone
+Daniel Radcliffe,Harry Potter and the Chamber of Secrets
+Daniel Radcliffe,Harry Potter and the Prisioner of Azkaban
+Daniel Radcliffe,Harry Potter and the Goblet of Fire
+Daniel Radcliffe,Harry Potter and the Order of the Phoenix
+Daniel Radcliffe,Harry Potter and the Half-Blood Prince
+Daniel Radcliffe,Harry Potter and the Deathly Hallows: Part 1
+Daniel Radcliffe,Harry Potter and the Deathly Hallows: Part 2
+Daniel Radcliffe,Now You See Me 2
+Rupert Grint,Harry Potter and the Philosopher's Stone
+Rupert Grint,Harry Potter and the Chamber of Secrets
+Rupert Grint,Harry Potter and the Prisioner of Azkaban
+Rupert Grint,Harry Potter and the Goblet of Fire
+Rupert Grint,Harry Potter and the Order of the Phoenix
+Rupert Grint,Harry Potter and the Half-Blood Prince
+Rupert Grint,Harry Potter and the Deathly Hallows: Part 1
+Rupert Grint,Harry Potter and the Deathly Hallows: Part 2
+Luke Evans,Beauty and The Beast
+Jesse Eisenberg,The Social Network
+Jesse Eisenberg,Batman v Superman: Dawn of Justice
+Jesse Eisenberg,Justice League
+Jesse Eisenberg,Now You See Me 2
+Jesse Eisenberg,Now You See Me
+Jesse Eisenberg,Zombieland
+Jesse Eisenberg,Zombieland: Double Tap
+Zac Efron,"Extremely Wicked, Shockingly Evil and Vile"
+Zac Efron,Baywatch
+Zac Efron,The Greatest Showman
+Zendaya,Spider-Man: Far From Home
+Zendaya,Spider-Man: Homecoming
+Zendaya,The Greatest Showman
+Lilly Collins,Mirror Mirror
+Lilly Collins,"Extremely Wicked, Shockingly Evil and Vile"
+Marion Cotillard,Inception
+Marion Cotillard,The Dark Knight Rises
+Steve Carell,The Big Short
+Steve Carell,"Crazy, Stupid, Love"
+Woody Harrelson,The Hunger Games
+Woody Harrelson,Now You See Me 2
+Woody Harrelson,Now You See Me
+Woody Harrelson,Zombieland
+Woody Harrelson,Zombieland: Double Tap
+Jeremy Renner,Avengers
+Jeremy Renner,Avengers: Age of Ultron
+Jeremy Renner,Avengers: Endgame
+Jeremy Renner,Captain America: Civil War
+Jeremy Renner,Arrival
+Armie Hammer,The Social Network
+Armie Hammer,The Man from U.N.C.L.E.
+Armie Hammer,Mirror Mirror
+Hugo Weaving,Captain America: The First Avenger
+Hugo Weaving,Matrix
+Joseph Gordon-Levitt,The Dark Knight Rises
+Joseph Gordon-Levitt,Inception
+Joseph Gordon-Levitt,10 Things I Hate About You
