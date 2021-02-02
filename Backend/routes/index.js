@@ -73,6 +73,27 @@ router.get('/movieActors/:movie', async (req, res) => {
   }
 });
 
+router.get('/movieDirector/:movie', async (req, res) => {
+  try{
+    const movie = req.params.movie;
+
+    const nodes=[];
+    //const session = driver.session()
+    const result = await session.run('MATCH (p:Pelicula {titulo: $movie})<-[:DIRIGIO]-(a:Persona) return a',
+          { movie: movie}
+      )
+    //await driver.close()
+      
+    result.records.forEach(r =>{ nodes.push(r.get(0).properties)});
+
+    res.send(nodes);
+
+  } catch (err) {
+    console.log(err);
+    res.send(err);
+  }
+});
+
 router.get('/movieRelations/:movie', async (req, res) => {
   try{
     const movie = req.params.movie;
@@ -100,6 +121,28 @@ router.get('/actorsMovies/:actor', async (req, res) => {
     //const session = driver.session()
     const result = await session.run(
       'MATCH (a:Persona {nombre: $acNombre})-[:ACTUO_EN]->(p:Pelicula) return p',
+      {acNombre: acName}
+    )
+
+    //await driver.close()
+
+    result.records.forEach(r =>{ nodes.push(r.get(0).properties)});
+
+    res.send(nodes);
+  } catch (err) {
+    console.log(err);
+    res.send(err);
+  }
+});
+
+router.get('/actorInfo/:actor', async (req, res) => {
+  try{
+    const acName = req.params.actor;
+
+    const nodes=[];
+    //const session = driver.session()
+    const result = await session.run(
+      'MATCH (a:Persona {nombre: $acNombre}) return a',
       {acNombre: acName}
     )
 
