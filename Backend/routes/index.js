@@ -18,7 +18,7 @@ router.get('/directorsMovies/:dirName', async (req, res) => {
     const nodes=[];
     
     const result = await session.run(
-        'MATCH (d:Director {dirNombre: $dirNombre})-[:DIRIGIO]->(p:Pelicula) return p',
+        'MATCH (d:Persona {nombre: $dirNombre})-[:DIRIGIO]->(p:Pelicula) return p',
         {dirNombre: dirName}
     )
 
@@ -58,12 +58,12 @@ router.get('/movieActors/:movie', async (req, res) => {
 
     const nodes=[];
     //const session = driver.session()
-    const result = await session.run('MATCH (p:Pelicula {titulo: $movie})<-[:ACTUO_EN]-(a:Actor) return a',
+    const result = await session.run('MATCH (p:Pelicula {titulo: $movie})<-[:ACTUO_EN]-(a:Persona) return a',
           { movie: movie}
       )
     //await driver.close()
       
-    result.records.forEach(r =>{ nodes.push(r.get(0).properties.nombre)});
+    result.records.forEach(r =>{ nodes.push([r.get(0).properties.nombre, r.get(0).properties.foto])});
 
     res.send(nodes);
 
@@ -78,11 +78,10 @@ router.get('/movieRelations/:movie', async (req, res) => {
     const movie = req.params.movie;
 
     const nodes=[];
-    //const session = driver.session()
+    
     const result = await session.run('MATCH (p:Pelicula {titulo: $movie})<-[]-(x) return x',
           { movie: movie}
       )
-    //await driver.close()
       
     result.records.forEach(r =>{ nodes.push(r.get(0).properties)});
 
@@ -100,7 +99,7 @@ router.get('/actorsMovies/:actor', async (req, res) => {
     const nodes=[];
     //const session = driver.session()
     const result = await session.run(
-      'MATCH (a:Actor {nombre: $acNombre})-[:ACTUO_EN]->(p:Pelicula) return p',
+      'MATCH (a:Persona {nombre: $acNombre})-[:ACTUO_EN]->(p:Pelicula) return p',
       {acNombre: acName}
     )
 
@@ -205,7 +204,7 @@ router.get('/movieReviews/:movie', async (req, res) => {
   }
 });
 
-router.get('/movieSccoreAvg/:movie', async (req, res) => {
+router.get('/movieScoreAvg/:movie', async (req, res) => {
   try{
     const movie = req.params.movie;
 

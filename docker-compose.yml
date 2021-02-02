@@ -12,7 +12,7 @@ neo4j:
 server:
   image: node:latest
   working_dir: /Backend
-  command: npm start
+  command: npm run dev
   ports:
     - "9000:3000"
   volumes:
