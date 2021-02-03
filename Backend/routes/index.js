@@ -6,9 +6,45 @@ const session = driver.session()
 var express = require('express');
 var router = express.Router();
 
+var redis = require('redis');
+var client = redis.createClient(
+  {
+    host: 'redis-13459.c244.us-east-1-2.ec2.cloud.redislabs.com',
+    port: 13459,
+    password: 'PhCOixzP31ZkIEcTSjowF89HSliUMU82'
+}); //creates a new client
+
+client.on('connect', function() {
+    console.log('connected');
+});
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
+});
+
+router.get('/topMovies', async (req, res) => {
+  try{
+    client.zrevrangebyscore('topmovies', 10, 0,'withscores', 'limit',0,5, function(err, reply) {
+      res.send(reply);
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.send(err);
+  }
+});
+
+router.get('/bottomMovies', async (req, res) => {
+  try{
+    client.zrangebyscore('topmovies', 0, 10, 'withscores', 'limit', 0, 5, function(err, reply) {
+      res.send(reply);
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.send(err);
+  }
 });
 
 router.get('/directorsMovies/:dirName', async (req, res) => {
@@ -57,11 +93,9 @@ router.get('/movieActors/:movie', async (req, res) => {
     const movie = req.params.movie;
 
     const nodes=[];
-    //const session = driver.session()
     const result = await session.run('MATCH (p:Pelicula {titulo: $movie})<-[:ACTUO_EN]-(a:Persona) return a',
           { movie: movie}
       )
-    //await driver.close()
       
     result.records.forEach(r =>{ nodes.push([r.get(0).properties.nombre, r.get(0).properties.foto])});
 
@@ -188,14 +222,24 @@ router.get('/createReview/:usuario/:review/:score/:movie', async (req, res) => {
     const movie = req.params.movie;
 
     const nodes=[];
-    //const session = driver.session()
+    
     const result = await session.run(
       'MATCH (u:Usuario),(p:Pelicula) WHERE u.username = $usr AND p.titulo = $movie CREATE (u)-[r:CALIFICA { score: toInteger($score), review:$review}]->(p) RETURN type(r), r.name',
           {usr: usuario, movie: movie, score: score, review: review}
       )
-      //await driver.close()
       
-      result.records.forEach(r =>{ nodes.push(r.get(0).properties)});
+      
+    const result2 = await session.run(
+      'MATCH (:Usuario)-[r:CALIFICA]->(p:Pelicula {titulo: $movie}) return avg(r.score)',
+      {movie: movie}
+    )
+    
+  
+    result2.records.forEach(r =>{ nodes.push(r.get(0))});
+
+    client.zadd('topmovies', nodes[0], movie, function(err, reply) {
+      console.log(err);
+    });
 
     res.send(nodes);
   } catch (err) {
@@ -238,9 +282,18 @@ router.get('/modifyReview/:usuario/:review/:score/:movie', async (req, res) => {
       'MATCH (u:Usuario {username: $usr})-[r:CALIFICA]->(p:Pelicula {titulo: $mov}) set r.review = $rev, r.score = toInteger($score)',
           {usr: usuario, mov: movie, rev: review, score: score}
       )
-      //await driver.close()
-      
-      result.records.forEach(r =>{ nodes.push([r.get(0).properties,r.get(1).properties])});
+    
+    const result2 = await session.run(
+      'MATCH (:Usuario)-[r:CALIFICA]->(p:Pelicula {titulo: $movie}) return avg(r.score)',
+      {movie: movie}
+    )
+    
+  
+    result2.records.forEach(r =>{ nodes.push(r.get(0))});
+
+    client.zadd('topmovies', nodes[0], movie, function(err, reply) {
+      console.log(err);
+    });
 
     res.send(nodes);
   } catch (err) {
@@ -260,9 +313,24 @@ router.get('/deleteReview/:usuario/:movie', async (req, res) => {
       'MATCH (u:Usuario {username: $usr})-[r:CALIFICA]->(p:Pelicula {titulo: $mov}) delete r',
           {usr: usuario, mov: movie}
       )
-      //await driver.close()
-      
-      result.records.forEach(r =>{ nodes.push([r.get(0).properties,r.get(1).properties])});
+    const result2 = await session.run(
+      'MATCH (:Usuario)-[r:CALIFICA]->(p:Pelicula {titulo: $movie}) return avg(r.score)',
+      {movie: movie}
+    )
+  
+    result2.records.forEach(r =>{ nodes.push(r.get(0))});
+    
+  if(nodes[0]==null){
+    client.zrem('topmovies', movie, function(err, reply) {
+      console.log(err);
+    });
+  }
+  else{
+    client.zadd('topmovies', nodes[0], movie, function(err, reply) {
+      console.log(err);
+    });
+  }
+    
 
     res.send(nodes);
   } catch (err) {
