@@ -214,6 +214,31 @@ router.get('/userInfo/:user', async (req, res) => {
   }
 });
 
+router.get('/userInfoRedis/:user', async (req, res) => {
+  try{
+    const user = req.params.user;
+
+    const nodes=[];
+
+    client.get(user+":password", function(err, reply1) {
+      nodes.push({"password": reply1})
+      client.get(user+":mail", function(err, reply2) {
+        nodes.push({"mail": reply2})
+        client.get(user+":fecha", function(err, reply3) {
+          nodes.push({"fecha": reply3})
+          client.get(user+":genero", function(err, reply4) {
+            nodes.push({"genero": reply4})
+            res.send(nodes);
+          });
+        });
+      });
+    });
+  } catch (err) {
+    console.log(err);
+    res.send(err);
+  }
+});
+
 router.get('/createReview/:usuario/:review/:score/:movie', async (req, res) => {
   try{
     const usuario = req.params.usuario;
@@ -320,16 +345,16 @@ router.get('/deleteReview/:usuario/:movie', async (req, res) => {
   
     result2.records.forEach(r =>{ nodes.push(r.get(0))});
     
-  if(nodes[0]==null){
-    client.zrem('topmovies', movie, function(err, reply) {
-      console.log(err);
-    });
-  }
-  else{
-    client.zadd('topmovies', nodes[0], movie, function(err, reply) {
-      console.log(err);
-    });
-  }
+    if(nodes[0]==null){
+      client.zrem('topmovies', movie, function(err, reply) {
+        console.log(err);
+      });
+    }
+    else{
+      client.zadd('topmovies', nodes[0], movie, function(err, reply) {
+        console.log(err);
+      });
+    }
     
 
     res.send(nodes);
@@ -391,12 +416,46 @@ router.get('/registerUser/:username/:password/:mail/:genero/:fecha', async (req,
       const fecha = req.params.fecha;
 
       const nodes=[];
-      //const session = driver.session()
+
       const result = await session.run(
         'CREATE (:Usuario {username: $username, password:$password, mail:$mail, genero:$genero, fechaDeNacimiento:$fecha});',
             {username, password, mail, genero, fecha}
       )
-      //await driver.close()
+
+      client.set(username+":password", password);
+      client.set(username+":mail", mail);
+      client.set(username+":fecha", fecha);
+      client.set(username+":genero", genero);
+
+      result.records.forEach(r =>{ nodes.push(r.get(0))});
+
+      res.send(nodes);
+  } catch (err) {
+      console.log(err);
+      res.send(err);
+  }
+});
+
+
+router.get('/editUser/:username/:password/:mail/:genero/:fecha', async (req, res) => {
+  try{
+      const username = req.params.username;
+      const password = req.params.password;
+      const mail = req.params.mail;
+      const genero = req.params.genero;
+      const fecha = req.params.fecha;
+
+      const nodes=[];
+
+      const result = await session.run(
+        'match (n:Usuario {username: $username}) SET n.password=$password, n.genero=$genero, n.fechaDeNacimiento=$fecha, n.mail=$mail;',
+            {username, password, mail, genero, fecha}
+      )
+
+      client.set(username+":password", password);
+      client.set(username+":mail", mail);
+      client.set(username+":fecha", fecha);
+      client.set(username+":genero", genero);
 
       result.records.forEach(r =>{ nodes.push(r.get(0))});
 
