@@ -190,7 +190,7 @@ router.get('/createReview/:usuario/:review/:score/:movie', async (req, res) => {
     const nodes=[];
     //const session = driver.session()
     const result = await session.run(
-      'MATCH (u:Usuario),(p:Pelicula) WHERE u.username = $usr AND p.titulo = $movie CREATE (u)-[r:CALIFICA { score: $score, review:$review}]->(p) RETURN type(r), r.name',
+      'MATCH (u:Usuario),(p:Pelicula) WHERE u.username = $usr AND p.titulo = $movie CREATE (u)-[r:CALIFICA { score: toInteger($score), review:$review}]->(p) RETURN type(r), r.name',
           {usr: usuario, movie: movie, score: score, review: review}
       )
       //await driver.close()
@@ -219,6 +219,52 @@ router.get('/userReviews/:usuario', async (req, res) => {
       result.records.forEach(r =>{ nodes.push([r.get(0).properties,r.get(1).properties])});
 
   res.send(nodes);
+  } catch (err) {
+    console.log(err);
+    res.send(err);
+  }
+});
+
+router.get('/modifyReview/:usuario/:review/:score/:movie', async (req, res) => {
+  try{  
+    const usuario = req.params.usuario;
+    const movie = req.params.movie;
+    const review = req.params.review;
+    const score = req.params.score;
+
+    const nodes=[];
+    //const session = driver.session()
+    const result = await session.run(
+      'MATCH (u:Usuario {username: $usr})-[r:CALIFICA]->(p:Pelicula {titulo: $mov}) set r.review = $rev, r.score = toInteger($score)',
+          {usr: usuario, mov: movie, rev: review, score: score}
+      )
+      //await driver.close()
+      
+      result.records.forEach(r =>{ nodes.push([r.get(0).properties,r.get(1).properties])});
+
+    res.send(nodes);
+  } catch (err) {
+    console.log(err);
+    res.send(err);
+  }
+});
+
+router.get('/deleteReview/:usuario/:movie', async (req, res) => {
+  try{  
+    const usuario = req.params.usuario;
+    const movie = req.params.movie;
+
+    const nodes=[];
+    //const session = driver.session()
+    const result = await session.run(
+      'MATCH (u:Usuario {username: $usr})-[r:CALIFICA]->(p:Pelicula {titulo: $mov}) delete r',
+          {usr: usuario, mov: movie}
+      )
+      //await driver.close()
+      
+      result.records.forEach(r =>{ nodes.push([r.get(0).properties,r.get(1).properties])});
+
+    res.send(nodes);
   } catch (err) {
     console.log(err);
     res.send(err);
