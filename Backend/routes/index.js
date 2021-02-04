@@ -62,70 +62,30 @@ router.post('/login', async (req,res)=>{
   
 });
 
-
-router.get('/login/:username/:password', async (req,res)=>{
-  try{
-    //Variables
-    const usuario = req.params.username;
-    const password = req.params.password;
-    const nodes=[];
-
-    //Consulta a Neo4j
-    const result = await session.run(
-      'MATCH (a:Usuario {username: $usr}) return a',
-      {usr: usuario}
-    )
-
-    result.records.forEach(r =>{ nodes.push(r.get(0).properties)});
-    
-    //Si contraseña e usuario son correctos, iniciar sesión
-    if(nodes.length > 0 && nodes[0].password==password){
-      sess=req.session;
-      sess.username=req.params.username;
-      sess.password=password;
-      sess.mail=nodes[0].mail;
-      sess.fecha=nodes[0].fechaDeNacimiento;
-      sess.genero=nodes[0].genero;
-
-      res.sendStatus(200);
-    }
-    //Si hay un problema, enviar error
-    else{
-      res.status(400).send("Login failed");
-    }
-  } catch (err) {
-    console.log(err);
-    res.status(500).send(err);
-  }
-  
-});
-
-
-router.get('/sessionCheck', (req,res)=>{
-  sess=req.session;
-  console.log(sess.username);
-  console.log(sess.fecha);
-  console.log(sess.mail);
-
-  res.sendStatus(200);
-});
-
 /**
  * Para que el usuario se salga de su sesión.
  *
  * @param {string} username Nombre de usuario.
- * @param {string} password Contraseña del usuario.
  * @return {Status} Estado de respuesta que indica si la acción fue exitosa o si hubo algún problema.
  */
-router.get("/logout", async (req, res) => {
+router.post("/logout", async (req, res) => {
   try{
-    //Terminar sesión
-    req.session.destroy(err => {
-        if (err) {
-            return console.log(err);
-        }
-        res.sendStatus(200);
+    const user = req.body.user;
+
+    appHelp.client.del(user+':password', function(err, reply) {
+      console.log(reply);
     });
+    appHelp.client.del(user+':mail', function(err, reply) {
+      console.log(reply);
+    });
+    appHelp.client.del(user+':fecha', function(err, reply) {
+      console.log(reply);
+    });
+    appHelp.client.del(user+':genero', function(err, reply) {
+      console.log(reply);
+    });
+
+    res.sendStatus(200);
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
