@@ -349,6 +349,27 @@ router.get('/userInfo', async (req, res) => {
   }
 });
 
+router.get('/userInfoGet/:user', async (req, res) => {
+  try{
+    //Variables
+    const nodes=[];
+    const user=req.params.user;
+
+    //Consulta a Neo4j
+    const result = await session.run(
+      'MATCH (a:Usuario {username: $user}) return a',
+      {user}
+    )
+
+    result.records.forEach(r =>{ nodes.push(r.get(0).properties)});
+
+    res.send(nodes);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
+
   /**
  * Crea una reseña y actualiza el promedio de la película en Neo4J y en Redis.
  *
@@ -605,7 +626,6 @@ router.get('/movieReviews/:movie', async (req, res) => {
    * Edición de un usuario. Actualiza la información del usuario en Neo4J y la información de la sesión en Redis
    *
    * @param {string} username Nombre de usuario actualizado.
-   * @param {string} password Contraseña actualizada del usuario.
    * @param {string} mail Email actualizado del usuario.
    * @param {string} genero Genero actualizado del usuario.
    * @param {string} fecha Fecha actualizada del usuario.
@@ -623,7 +643,7 @@ router.get('/movieReviews/:movie', async (req, res) => {
         //Consulta a Neo4j
         const result = await session.run(
           'match (n:Usuario {username: $username}) SET n.genero=$genero, n.fechaDeNacimiento=$fecha, n.mail=$mail;',
-              {username, password, mail, genero, fecha}
+              {username, mail, genero, fecha}
         )
         
         //Actualizar variables de sesion
