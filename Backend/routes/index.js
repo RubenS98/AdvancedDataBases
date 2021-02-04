@@ -34,7 +34,7 @@ router.post('/login', async (req,res)=>{
     //Si contraseña e usuario son correctos, iniciar sesión
     if(nodes.length > 0 && nodes[0].password==password){
       sess=req.session;
-      sess.username=req.params.username;
+      sess.username=req.body.username;
       sess.password=password;
       sess.mail=nodes[0].mail;
       sess.fecha=nodes[0].fechaDeNacimiento;
