@@ -36,21 +36,18 @@ router.post('/login', async (req,res)=>{
     
     //Si contraseña e usuario son correctos, iniciar sesión
     if(nodes.length > 0 && nodes[0].password==password){
-      sess=req.session;
-      sess.username=req.body.username;
-      sess.password=password;
-      sess.mail=nodes[0].mail;
-      sess.fecha=nodes[0].fechaDeNacimiento;
-      sess.genero=nodes[0].genero;
-
-      console.log(sess.username, sess.password, sess.fecha)
-      console.log(sess.username, sess.password, sess.fecha)
-      console.log(sess.username, sess.password, sess.fecha)
-      console.log(sess.username, sess.password, sess.fecha)
-      console.log(sess.username, sess.password, sess.fecha)
-      console.log(sess.username, sess.password, sess.fecha)
-      console.log(sess.username, sess.password, sess.fecha)
-      console.log(sess.username, sess.password, sess.fecha)
+      appHelp.client.set(usuario+':password', password, function(err, reply) {
+        console.log(reply);
+      });
+      appHelp.client.set(usuario+':mail', nodes[0].mail, function(err, reply) {
+        console.log(reply);
+      });
+      appHelp.client.set(usuario+':fecha', nodes[0].fechaDeNacimiento, function(err, reply) {
+        console.log(reply);
+      });
+      appHelp.client.set(usuario+':genero', nodes[0].genero, function(err, reply) {
+        console.log(reply);
+      });
 
       res.sendStatus(200);
     }
@@ -383,15 +380,26 @@ router.get('/actorInfo/:actor', async (req, res) => {
  *
  * @return {Array} Arreglo con la información del usuario que ha iniciado sesión.
  */
-router.get('/userInfo', async (req, res) => {
+router.get('/userInfo/:user', async (req, res) => {
   try{
     //Variables
     const nodes=[];
-    sess=req.session;
+    const user = req.params.user;
 
-    //Arreglo con variables de sesión
-    nodes.push({"username":sess.username}, {"password":sess.password}, {"fecha":sess.fecha}, {"mail":sess.mail}, {"genero":sess.genero});
-    
+    appHelp.client.get(user+':password', function(err, reply) {
+      nodes.push({"password": reply});
+      appHelp.client.get(user+':mail', function(err, reply) {
+        nodes.push({"mail": reply});
+        appHelp.client.get(user+':genero', function(err, reply) {
+          nodes.push({"genero": reply});
+          appHelp.client.get(user+':fecha', function(err, reply) {
+            nodes.push({"fechaDeNacimiento": reply});
+            res.send(nodes);
+          });
+        });
+      });
+    });
+
     res.send(nodes);
   } catch (err) {
     console.log(err);
@@ -701,10 +709,16 @@ router.get('/movieReviews/:movie', async (req, res) => {
               {usuario, mail, genero, fecha}
         )
         
-        //Actualizar variables de sesion
-        sess.mail=mail;
-        sess.fecha=fecha;
-        sess.genero=genero;
+        //Actualización en Redis
+        appHelp.client.set(usuario+':mail', mail, function(err, reply) {
+          console.log(reply);
+        });
+        appHelp.client.set(usuario+':fecha', fecha, function(err, reply) {
+          console.log(reply);
+        });
+        appHelp.client.set(usuario+':genero', genero, function(err, reply) {
+          console.log(reply);
+        });
   
         res.sendStatus(200)
     } catch (err) {

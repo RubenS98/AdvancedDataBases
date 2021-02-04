@@ -1,6 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
-const expSession = require('express-session');
+let expSession = require('express-session');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -38,19 +38,17 @@ client.on('connect', function() {
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser('secret'));
 app.use(cors());
 
 //Crear middleware de sesión
 app.use(expSession({
   store: new RedisStore({ client: client }),
-  secret: 'secret$%^134',
-  resave: false,
-  saveUninitialized: false,
+  secret: 'secret',
+  resave: true,
+  saveUninitialized: true,
   cookie: {
-      secure: false,
-      httpOnly: false, 
-      maxAge: 1000 * 60 * 10
+      maxAge: 1000 * 60 * 60 * 8
   }
 }));
 
