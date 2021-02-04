@@ -54,6 +54,44 @@ router.post('/login', async (req,res)=>{
 });
 
 
+router.get('/login/:username/:password', async (req,res)=>{
+  try{
+    //Variables
+    const usuario = req.params.username;
+    const password = req.params.password;
+    const nodes=[];
+
+    //Consulta a Neo4j
+    const result = await session.run(
+      'MATCH (a:Usuario {username: $usr}) return a',
+      {usr: usuario}
+    )
+
+    result.records.forEach(r =>{ nodes.push(r.get(0).properties)});
+    
+    //Si contraseña e usuario son correctos, iniciar sesión
+    if(nodes.length > 0 && nodes[0].password==password){
+      sess=req.session;
+      sess.username=req.params.username;
+      sess.password=password;
+      sess.mail=nodes[0].mail;
+      sess.fecha=nodes[0].fechaDeNacimiento;
+      sess.genero=nodes[0].genero;
+
+      res.sendStatus(200);
+    }
+    //Si hay un problema, enviar error
+    else{
+      res.status(400).send("Login failed");
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+  
+});
+
+
 router.get('/sessionCheck', (req,res)=>{
   sess=req.session;
   console.log(sess.username);
@@ -381,8 +419,9 @@ router.get('/userInfoGet/:user', async (req, res) => {
 router.post('/createReview', async (req, res) => {
   try{
     //Variables
-    sess=req.session;
-    const usuario = sess.username;
+    //sess=req.session;
+    //const usuario = sess.username;
+    const usuario = req.body.username;
     const review = req.body.review;
     const score = req.body.score;
     const movie = req.body.movie;
@@ -422,8 +461,9 @@ router.post('/createReview', async (req, res) => {
 router.get('/userReviews', async (req, res) => {
   try{
     //Variables
-    sess=req.session;
-    const usuario = sess.username;
+    //sess=req.session;
+    //const usuario = sess.username;
+    const usuario = req.body.username;
     const nodes=[];
 
     //Consulta a Neo4j
@@ -453,8 +493,9 @@ router.get('/userReviews', async (req, res) => {
 router.post('/modifyReview', async (req, res) => {
   try{ 
     //Variables
-    sess=req.session;
-    const usuario = sess.username;
+    //sess=req.session;
+    //const usuario = sess.username;
+    const usuario = req.body.username;
     const movie = req.body.movie;
     const review = req.body.review;
     const score = req.body.score;
@@ -496,8 +537,9 @@ router.post('/modifyReview', async (req, res) => {
 router.post('/deleteReview', async (req, res) => {
   try{
     //Variables
-    sess=req.session;
-    const usuario = sess.username;
+    //sess=req.session;
+    //const usuario = sess.username;
+    const usuario = req.body.username;
     const movie = req.body.movie;
     const nodes=[];
     
@@ -634,8 +676,9 @@ router.get('/movieReviews/:movie', async (req, res) => {
   router.post('/editUser', async (req, res) => {
     try{
         //Variables
-        sess=req.session;
-        const username = sess.username;
+        //sess=req.session;
+        //const usuario = sess.username;
+        const usuario = req.body.username;
         const mail = req.body.mail;
         const genero = req.body.genero;
         const fecha = req.body.fecha;
