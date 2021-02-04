@@ -705,7 +705,7 @@ router.get('/movieReviews/:movie', async (req, res) => {
 
         //Consulta a Neo4j
         const result = await session.run(
-          'match (n:Usuario {username: $username}) SET n.genero=$genero, n.fechaDeNacimiento=$fecha, n.mail=$mail;',
+          'match (n:Usuario {username: $usuario}) SET n.genero=$genero, n.fechaDeNacimiento=$fecha, n.mail=$mail;',
               {usuario, mail, genero, fecha}
         )
         
