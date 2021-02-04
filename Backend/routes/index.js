@@ -44,6 +44,13 @@ router.post('/login', async (req,res)=>{
       sess.genero=nodes[0].genero;
 
       console.log(sess.username, sess.password, sess.fecha)
+      console.log(sess.username, sess.password, sess.fecha)
+      console.log(sess.username, sess.password, sess.fecha)
+      console.log(sess.username, sess.password, sess.fecha)
+      console.log(sess.username, sess.password, sess.fecha)
+      console.log(sess.username, sess.password, sess.fecha)
+      console.log(sess.username, sess.password, sess.fecha)
+      console.log(sess.username, sess.password, sess.fecha)
 
       res.sendStatus(200);
     }
@@ -691,7 +698,7 @@ router.get('/movieReviews/:movie', async (req, res) => {
         //Consulta a Neo4j
         const result = await session.run(
           'match (n:Usuario {username: $username}) SET n.genero=$genero, n.fechaDeNacimiento=$fecha, n.mail=$mail;',
-              {username, mail, genero, fecha}
+              {usuario, mail, genero, fecha}
         )
         
         //Actualizar variables de sesion
