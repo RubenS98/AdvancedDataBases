@@ -62,6 +62,53 @@ router.post('/login', async (req,res)=>{
   
 });
 
+
+router.get('/login/:username/:password', async (req,res)=>{
+  try{
+    //Variables
+    const usuario = req.params.username;
+    const password = req.params.password;
+    const nodes=[];
+
+    console.log(usuario, password)
+    //Consulta a Neo4j
+    const result = await session.run(
+      'MATCH (a:Usuario {username: $usr}) return a',
+      {usr: usuario}
+    )
+
+    result.records.forEach(r =>{ nodes.push(r.get(0).properties)});
+
+    console.log(nodes[0])
+    
+    //Si contraseña e usuario son correctos, iniciar sesión
+    if(nodes.length > 0 && nodes[0].password==password){
+      appHelp.client.set(usuario+':password', password, function(err, reply) {
+        console.log(reply);
+      });
+      appHelp.client.set(usuario+':mail', nodes[0].mail, function(err, reply) {
+        console.log(reply);
+      });
+      appHelp.client.set(usuario+':fecha', nodes[0].fechaDeNacimiento, function(err, reply) {
+        console.log(reply);
+      });
+      appHelp.client.set(usuario+':genero', nodes[0].genero, function(err, reply) {
+        console.log(reply);
+      });
+
+      res.sendStatus(200);
+    }
+    //Si hay un problema, enviar error
+    else{
+      res.status(400).send("Login failed");
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+  
+});
+
 /**
  * Para que el usuario se salga de su sesión.
  *
@@ -335,7 +382,7 @@ router.get('/actorInfo/:actor', async (req, res) => {
   }
 });
 
-  /**
+/**
  * Información de un usuario. 
  *
  * @return {Array} Arreglo con la información del usuario que ha iniciado sesión.
@@ -346,27 +393,31 @@ router.get('/userInfo/:user', async (req, res) => {
     const nodes=[];
     const user = req.params.user;
 
-    appHelp.client.get(user+':password', function(err, reply) {
-      nodes.push({"password": reply});
-      appHelp.client.get(user+':mail', function(err, reply) {
-        nodes.push({"mail": reply});
-        appHelp.client.get(user+':genero', function(err, reply) {
-          nodes.push({"genero": reply});
-          appHelp.client.get(user+':fecha', function(err, reply) {
-            nodes.push({"fechaDeNacimiento": reply});
+    appHelp.client.get(user+':password', function(err, reply1) {
+      nodes.push({"password": reply1});
+      appHelp.client.get(user+':mail', function(err, reply2) {
+        nodes.push({"mail": reply2});
+        appHelp.client.get(user+':genero', function(err, reply3) {
+          nodes.push({"genero": reply3});
+          appHelp.client.get(user+':fecha', function(err, reply4) {
+            nodes.push({"fechaDeNacimiento": reply4});
             res.send(nodes);
           });
         });
       });
     });
 
-    res.send(nodes);
+    //res.send(nodes);
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
   }
 });
 
+/**
+ * Función de prueba. 
+ *
+ */
 router.get('/userInfoGet/:user', async (req, res) => {
   try{
     //Variables

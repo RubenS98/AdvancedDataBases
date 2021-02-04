@@ -1,6 +1,5 @@
 var createError = require('http-errors');
 var express = require('express');
-let expSession = require('express-session');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -12,16 +11,11 @@ var app = express();
 
 var bodyParser = require('body-parser')
 
-
 app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use(bodyParser.json())
 
 const redis = require('redis');
-const connectRedis = require('connect-redis');
-
-//Pasar sesión de express a connect Redis
-const RedisStore = connectRedis(expSession)
 
 //Se crea nuevo cliente de Redis
 const client = redis.createClient(
@@ -40,17 +34,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser('secret'));
 app.use(cors());
-
-//Crear middleware de sesión
-app.use(expSession({
-  store: new RedisStore({ client: client }),
-  secret: 'secret',
-  resave: true,
-  saveUninitialized: true,
-  cookie: {
-      maxAge: 1000 * 60 * 60 * 8
-  }
-}));
 
 app.use('/', indexRouter);
 
