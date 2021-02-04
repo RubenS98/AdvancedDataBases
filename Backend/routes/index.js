@@ -23,6 +23,7 @@ router.post('/login', async (req,res)=>{
     const password = req.body.password;
     const nodes=[];
 
+    console.log(usuario, password)
     //Consulta a Neo4j
     const result = await session.run(
       'MATCH (a:Usuario {username: $usr}) return a',
@@ -30,6 +31,8 @@ router.post('/login', async (req,res)=>{
     )
 
     result.records.forEach(r =>{ nodes.push(r.get(0).properties)});
+
+    console.log(nodes[0])
     
     //Si contraseña e usuario son correctos, iniciar sesión
     if(nodes.length > 0 && nodes[0].password==password){
@@ -39,6 +42,8 @@ router.post('/login', async (req,res)=>{
       sess.mail=nodes[0].mail;
       sess.fecha=nodes[0].fechaDeNacimiento;
       sess.genero=nodes[0].genero;
+
+      console.log(sess.username, sess.password, sess.fecha)
 
       res.sendStatus(200);
     }
@@ -396,7 +401,7 @@ router.get('/userInfoGet/:user', async (req, res) => {
     //Consulta a Neo4j
     const result = await session.run(
       'MATCH (a:Usuario {username: $user}) return a',
-      {user}
+      {user: user}
     )
 
     result.records.forEach(r =>{ nodes.push(r.get(0).properties)});
@@ -458,12 +463,12 @@ router.post('/createReview', async (req, res) => {
  *
  * @return {Array} Arreglo de reseñas de usuario.
  */
-router.get('/userReviews', async (req, res) => {
+router.get('/userReviews/:username', async (req, res) => {
   try{
     //Variables
     //sess=req.session;
     //const usuario = sess.username;
-    const usuario = req.body.username;
+    const usuario = req.params.username;
     const nodes=[];
 
     //Consulta a Neo4j
