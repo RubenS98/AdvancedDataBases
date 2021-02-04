@@ -8,7 +8,6 @@ const router = express.Router();
 
 const appHelp = require('../app')
 
-
 /**
  * Query the clothes database with input parameters and
  * return the result of the query.
@@ -18,10 +17,10 @@ const appHelp = require('../app')
  * @param {string} category Category (tops, bottoms, shoes) the user wants to see.
  * @return {array} Result of the query.
  */
-router.get('/login/:username/:password', async (req,res)=>{
+router.post('/login', async (req,res)=>{
   try{
-    const usuario = req.params.username;
-    const password = req.params.password;
+    const usuario = req.body.username;
+    const password = req.body.password;
 
     const nodes=[];
     const result = await session.run(
@@ -39,14 +38,14 @@ router.get('/login/:username/:password', async (req,res)=>{
       sess.fecha=nodes[0].fechaDeNacimiento;
       sess.genero=nodes[0].genero;
 
-      res.send("Good");
+      res.sendStatus(200);
     }
     else{
-      res.send("Bad");
+      res.status(400).send("Login failed");
     }
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
   
 });
@@ -57,7 +56,7 @@ router.get('/sessionCheck', (req,res)=>{
   console.log(sess.fecha);
   console.log(sess.mail);
 
-  res.send("Good");
+  res.sendStatus(200);
 });
 
 router.get("/logout", async (req, res) => {
@@ -66,35 +65,49 @@ router.get("/logout", async (req, res) => {
         if (err) {
             return console.log(err);
         }
-        res.send("Good")
+        res.sendStatus(200);
     });
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
 });
 
 router.get('/topMovies', async (req, res) => {
+  const nodes=[];
+  let size;
   try{
     appHelp.client.zrevrangebyscore('topmovies', 10, 0,'withscores', 'limit',0,5, function(err, reply) {
-      res.send(reply);
+      size=reply.length;
+      console.log(size);
+      for (let i=0; i<size; i+=2){
+        nodes.push({"titulo": reply[i], "score": reply[i+1]});
+      }
+      res.send(nodes);
     });
 
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
 });
 
 router.get('/bottomMovies', async (req, res) => {
+  const nodes=[];
+  let size;
+
   try{
     appHelp.client.zrangebyscore('topmovies', 0, 10, 'withscores', 'limit', 0, 5, function(err, reply) {
-      res.send(reply);
+      size=reply.length;
+      for (let i=0; i<size; i+=2){
+        nodes.push({"titulo": reply[i], "score": reply[i+1]});
+      }
+      res.send(nodes);
     });
 
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
 });
 
@@ -115,7 +128,7 @@ router.get('/directorsMovies/:dirName', async (req, res) => {
 
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
 });
 
@@ -135,7 +148,7 @@ router.get('/movieFilter/:query', async (req, res) => {
 
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
 });
 
@@ -154,7 +167,7 @@ router.get('/movieActors/:movie', async (req, res) => {
 
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
 });
 
@@ -174,7 +187,7 @@ router.get('/movieDirector/:movie', async (req, res) => {
 
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
 });
 
@@ -193,7 +206,7 @@ router.get('/movieRelations/:movie', async (req, res) => {
     res.send(nodes);
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
 });
 
@@ -212,7 +225,7 @@ router.get('/actorsMovies/:actor', async (req, res) => {
     res.send(nodes);
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
 });
 
@@ -232,7 +245,7 @@ router.get('/actorInfo/:actor', async (req, res) => {
     res.send(nodes);
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
 });
 
@@ -248,16 +261,17 @@ router.get('/userInfo', async (req, res) => {
     res.send(nodes);
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
 });
 
-router.get('/createReview/:usuario/:review/:score/:movie', async (req, res) => {
+router.post('/createReview', async (req, res) => {
   try{
-    const usuario = req.params.usuario;
-    const review = req.params.review;
-    const score = req.params.score;
-    const movie = req.params.movie;
+    sess=req.session;
+    const usuario = sess.username;
+    const review = req.body.review;
+    const score = req.body.score;
+    const movie = req.body.movie;
 
     const nodes=[];
     
@@ -279,16 +293,17 @@ router.get('/createReview/:usuario/:review/:score/:movie', async (req, res) => {
       console.log(err);
     });
 
-    res.send(nodes);
+    res.sendStatus(200);
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
 });
 
-router.get('/userReviews/:usuario', async (req, res) => {
-  try{  
-    const usuario = req.params.usuario;
+router.get('/userReviews', async (req, res) => {
+  try{
+    sess=req.session;
+    const usuario = sess.username;
 
     const nodes=[];
     const result = await session.run(
@@ -301,16 +316,17 @@ router.get('/userReviews/:usuario', async (req, res) => {
   res.send(nodes);
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
 });
 
-router.get('/modifyReview/:usuario/:review/:score/:movie', async (req, res) => {
-  try{  
-    const usuario = req.params.usuario;
-    const movie = req.params.movie;
-    const review = req.params.review;
-    const score = req.params.score;
+router.post('/modifyReview', async (req, res) => {
+  try{ 
+    sess=req.session;
+    const usuario = sess.username;
+    const movie = req.body.movie;
+    const review = req.body.review;
+    const score = req.body.score;
 
     const nodes=[];
     
@@ -330,17 +346,18 @@ router.get('/modifyReview/:usuario/:review/:score/:movie', async (req, res) => {
       console.log(err);
     });
 
-    res.send(nodes);
+    res.sendStatus(200);
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
 });
 
-router.get('/deleteReview/:usuario/:movie', async (req, res) => {
-  try{  
-    const usuario = req.params.usuario;
-    const movie = req.params.movie;
+router.post('/deleteReview', async (req, res) => {
+  try{
+    sess=req.session;
+    const usuario = sess.username;
+    const movie = req.body.movie;
 
     const nodes=[];
     
@@ -365,12 +382,11 @@ router.get('/deleteReview/:usuario/:movie', async (req, res) => {
         console.log(err);
       });
     }
-    
-
-    res.send(nodes);
+  
+    res.sendStatus(200);
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
 });
 
@@ -391,7 +407,7 @@ router.get('/movieReviews/:movie', async (req, res) => {
     res.send(nodes);
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
 });
 
@@ -410,63 +426,70 @@ router.get('/movieScoreAvg/:movie', async (req, res) => {
     res.send(nodes);
   } catch (err) {
     console.log(err);
-    res.send(err);
+    res.status(500).send(err);
   }
   });
 
-router.get('/registerUser/:username/:password/:mail/:genero/:fecha', async (req, res) => {
+  /**
+ * Registro de un nuevo usuario. Inserta la información del nuevo usuario.
+ *
+ * @param {string} username Nombre de nuevo usuario.
+ * @param {string} password Contraseña del nuevo usuario.
+ * @param {string} mail Email del nuevo usuario.
+ * @param {string} genero Genero del nuevo usuario.
+ * @return {bool} Regresa true si la acción se completó exitosamente o error si hubo algún problema.
+ */
+router.post('/registerUser', async (req, res) => {
   try{
-      const username = req.params.username;
-      const password = req.params.password;
-      const mail = req.params.mail;
-      const genero = req.params.genero;
-      const fecha = req.params.fecha;
-
-      const nodes=[];
+      const username = req.body.username;
+      const password = req.body.password;
+      const mail = req.body.mail;
+      const genero = req.body.genero;
+      const fecha = req.body.fecha;
 
       const result = await session.run(
         'CREATE (:Usuario {username: $username, password:$password, mail:$mail, genero:$genero, fechaDeNacimiento:$fecha});',
             {username, password, mail, genero, fecha}
       )
 
-      result.records.forEach(r =>{ nodes.push(r.get(0))});
-
-      res.send(nodes);
+      res.sendStatus(200);
   } catch (err) {
       console.log(err);
-      res.send(err);
+      res.status(500).send(err);
   }
 });
 
 
-router.get('/editUser/:username/:password/:mail/:genero/:fecha', async (req, res) => {
+/**
+ * Edición de un ususario. Actualiza la información del usuario en Neo4J y la información de la sesión en Redis
+ *
+ * @param {string} username Nombre de usuario actualizado.
+ * @param {string} password Contraseña actualizada del usuario.
+ * @param {string} mail Email actualizado del usuario.
+ * @param {string} genero Genero actualizado del usuario.
+ * @return {Status} Regresa true si la acción se completó exitosamente o el error si hubo algún problema
+ */
+router.post('/editUser', async (req, res) => {
   try{
-      const username = req.params.username;
-      const password = req.params.password;
-      const mail = req.params.mail;
-      const genero = req.params.genero;
-      const fecha = req.params.fecha;
-
-      const nodes=[];
+      sess=req.session;
+      const username = sess.username;
+      const mail = req.body.mail;
+      const genero = req.body.genero;
+      const fecha = req.body.fecha;
 
       const result = await session.run(
-        'match (n:Usuario {username: $username}) SET n.password=$password, n.genero=$genero, n.fechaDeNacimiento=$fecha, n.mail=$mail;',
+        'match (n:Usuario {username: $username}) SET n.genero=$genero, n.fechaDeNacimiento=$fecha, n.mail=$mail;',
             {username, password, mail, genero, fecha}
       )
 
-      sess=req.session;
-      sess.username=username;
-      sess.password=password;
       sess.mail=mail;
       sess.fecha=fecha;
       sess.genero=genero;
 
-      result.records.forEach(r =>{ nodes.push(r.get(0))});
-
-      res.send(nodes);
+      res.sendStatus(200)
   } catch (err) {
       console.log(err);
-      res.send(err);
+      res.status(500).send(err);
   }
 });
 
