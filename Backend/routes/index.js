@@ -3,29 +3,80 @@ const neo4j = require('neo4j-driver')
 const driver = neo4j.driver("bolt://neo4j:7687")
 const session = driver.session()
 
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var redis = require('redis');
-var client = redis.createClient(
-  {
-    host: 'redis-13459.c244.us-east-1-2.ec2.cloud.redislabs.com',
-    port: 13459,
-    password: 'PhCOixzP31ZkIEcTSjowF89HSliUMU82'
-}); //creates a new client
+const appHelp = require('../app')
 
-client.on('connect', function() {
-    console.log('connected');
+
+/**
+ * Query the clothes database with input parameters and
+ * return the result of the query.
+ *
+ * @param {string} stdSize Standard size of the input avatar.
+ * @param {string} gender Gender of the input avatar.
+ * @param {string} category Category (tops, bottoms, shoes) the user wants to see.
+ * @return {array} Result of the query.
+ */
+router.get('/login/:username/:password', async (req,res)=>{
+  try{
+    const usuario = req.params.username;
+    const password = req.params.password;
+
+    const nodes=[];
+    const result = await session.run(
+      'MATCH (a:Usuario {username: $usr}) return a',
+      {usr: usuario}
+    )
+
+    result.records.forEach(r =>{ nodes.push(r.get(0).properties)});
+    
+    if(nodes.length > 0 && nodes[0].password==password){
+      sess=req.session;
+      sess.username=req.params.username;
+      sess.password=password;
+      sess.mail=nodes[0].mail;
+      sess.fecha=nodes[0].fechaDeNacimiento;
+      sess.genero=nodes[0].genero;
+
+      res.send("Good");
+    }
+    else{
+      res.send("Bad");
+    }
+  } catch (err) {
+    console.log(err);
+    res.send(err);
+  }
+  
 });
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+router.get('/sessionCheck', (req,res)=>{
+  sess=req.session;
+  console.log(sess.username);
+  console.log(sess.fecha);
+  console.log(sess.mail);
+
+  res.send("Good");
+});
+
+router.get("/logout", async (req, res) => {
+  try{
+    req.session.destroy(err => {
+        if (err) {
+            return console.log(err);
+        }
+        res.send("Good")
+    });
+  } catch (err) {
+    console.log(err);
+    res.send(err);
+  }
 });
 
 router.get('/topMovies', async (req, res) => {
   try{
-    client.zrevrangebyscore('topmovies', 10, 0,'withscores', 'limit',0,5, function(err, reply) {
+    appHelp.client.zrevrangebyscore('topmovies', 10, 0,'withscores', 'limit',0,5, function(err, reply) {
       res.send(reply);
     });
 
@@ -37,7 +88,7 @@ router.get('/topMovies', async (req, res) => {
 
 router.get('/bottomMovies', async (req, res) => {
   try{
-    client.zrangebyscore('topmovies', 0, 10, 'withscores', 'limit', 0, 5, function(err, reply) {
+    appHelp.client.zrangebyscore('topmovies', 0, 10, 'withscores', 'limit', 0, 5, function(err, reply) {
       res.send(reply);
     });
 
@@ -112,11 +163,10 @@ router.get('/movieDirector/:movie', async (req, res) => {
     const movie = req.params.movie;
 
     const nodes=[];
-    //const session = driver.session()
+
     const result = await session.run('MATCH (p:Pelicula {titulo: $movie})<-[:DIRIGIO]-(a:Persona) return a',
           { movie: movie}
       )
-    //await driver.close()
       
     result.records.forEach(r =>{ nodes.push(r.get(0).properties)});
 
@@ -152,13 +202,10 @@ router.get('/actorsMovies/:actor', async (req, res) => {
     const acName = req.params.actor;
 
     const nodes=[];
-    //const session = driver.session()
     const result = await session.run(
       'MATCH (a:Persona {nombre: $acNombre})-[:ACTUO_EN]->(p:Pelicula) return p',
       {acNombre: acName}
     )
-
-    //await driver.close()
 
     result.records.forEach(r =>{ nodes.push(r.get(0).properties)});
 
@@ -174,14 +221,12 @@ router.get('/actorInfo/:actor', async (req, res) => {
     const acName = req.params.actor;
 
     const nodes=[];
-    //const session = driver.session()
+
     const result = await session.run(
       'MATCH (a:Persona {nombre: $acNombre}) return a',
       {acNombre: acName}
     )
 
-    //await driver.close()
-
     result.records.forEach(r =>{ nodes.push(r.get(0).properties)});
 
     res.send(nodes);
@@ -192,47 +237,15 @@ router.get('/actorInfo/:actor', async (req, res) => {
 });
 
 
-router.get('/userInfo/:user', async (req, res) => {
+router.get('/userInfo', async (req, res) => {
   try{
-    const usuario = req.params.user;
-
     const nodes=[];
-    //const session = driver.session()
-    const result = await session.run(
-      'MATCH (a:Usuario {username: $usr}) return a',
-      {usr: usuario}
-    )
 
-    //await driver.close()
+    sess=req.session;
 
-    result.records.forEach(r =>{ nodes.push(r.get(0).properties)});
-
+    nodes.push({"username":sess.username}, {"password":sess.password}, {"fecha":sess.fecha}, {"mail":sess.mail}, {"genero":sess.genero});
+    
     res.send(nodes);
-  } catch (err) {
-    console.log(err);
-    res.send(err);
-  }
-});
-
-router.get('/userInfoRedis/:user', async (req, res) => {
-  try{
-    const user = req.params.user;
-
-    const nodes=[];
-
-    client.get(user+":password", function(err, reply1) {
-      nodes.push({"password": reply1})
-      client.get(user+":mail", function(err, reply2) {
-        nodes.push({"mail": reply2})
-        client.get(user+":fecha", function(err, reply3) {
-          nodes.push({"fecha": reply3})
-          client.get(user+":genero", function(err, reply4) {
-            nodes.push({"genero": reply4})
-            res.send(nodes);
-          });
-        });
-      });
-    });
   } catch (err) {
     console.log(err);
     res.send(err);
@@ -262,7 +275,7 @@ router.get('/createReview/:usuario/:review/:score/:movie', async (req, res) => {
   
     result2.records.forEach(r =>{ nodes.push(r.get(0))});
 
-    client.zadd('topmovies', nodes[0], movie, function(err, reply) {
+    appHelp.client.zadd('topmovies', nodes[0], movie, function(err, reply) {
       console.log(err);
     });
 
@@ -278,12 +291,10 @@ router.get('/userReviews/:usuario', async (req, res) => {
     const usuario = req.params.usuario;
 
     const nodes=[];
-    //const session = driver.session()
     const result = await session.run(
       'MATCH (u:Usuario {username: $usr})-[r:CALIFICA]->(p:Pelicula) return r, p',
           {usr: usuario}
       )
-      //await driver.close()
       
       result.records.forEach(r =>{ nodes.push([r.get(0).properties,r.get(1).properties])});
 
@@ -302,7 +313,7 @@ router.get('/modifyReview/:usuario/:review/:score/:movie', async (req, res) => {
     const score = req.params.score;
 
     const nodes=[];
-    //const session = driver.session()
+    
     const result = await session.run(
       'MATCH (u:Usuario {username: $usr})-[r:CALIFICA]->(p:Pelicula {titulo: $mov}) set r.review = $rev, r.score = toInteger($score)',
           {usr: usuario, mov: movie, rev: review, score: score}
@@ -312,11 +323,10 @@ router.get('/modifyReview/:usuario/:review/:score/:movie', async (req, res) => {
       'MATCH (:Usuario)-[r:CALIFICA]->(p:Pelicula {titulo: $movie}) return avg(r.score)',
       {movie: movie}
     )
-    
   
     result2.records.forEach(r =>{ nodes.push(r.get(0))});
 
-    client.zadd('topmovies', nodes[0], movie, function(err, reply) {
+    appHelp.client.zadd('topmovies', nodes[0], movie, function(err, reply) {
       console.log(err);
     });
 
@@ -333,7 +343,7 @@ router.get('/deleteReview/:usuario/:movie', async (req, res) => {
     const movie = req.params.movie;
 
     const nodes=[];
-    //const session = driver.session()
+    
     const result = await session.run(
       'MATCH (u:Usuario {username: $usr})-[r:CALIFICA]->(p:Pelicula {titulo: $mov}) delete r',
           {usr: usuario, mov: movie}
@@ -346,12 +356,12 @@ router.get('/deleteReview/:usuario/:movie', async (req, res) => {
     result2.records.forEach(r =>{ nodes.push(r.get(0))});
     
     if(nodes[0]==null){
-      client.zrem('topmovies', movie, function(err, reply) {
+      appHelp.client.zrem('topmovies', movie, function(err, reply) {
         console.log(err);
       });
     }
     else{
-      client.zadd('topmovies', nodes[0], movie, function(err, reply) {
+      appHelp.client.zadd('topmovies', nodes[0], movie, function(err, reply) {
         console.log(err);
       });
     }
@@ -370,12 +380,11 @@ router.get('/movieReviews/:movie', async (req, res) => {
     const movie = req.params.movie;
 
     const nodes=[];
-    //const session = driver.session()
+    
     const result = await session.run(
       'MATCH (u:Usuario)-[r:CALIFICA]->(p:Pelicula {titulo: $movie}) return r, u.username',
       {movie: movie}
     )
-    //await driver.close()
 
     result.records.forEach(r =>{ nodes.push([r.get(0).properties,r.get(1)])});
 
@@ -391,12 +400,10 @@ router.get('/movieScoreAvg/:movie', async (req, res) => {
     const movie = req.params.movie;
 
     const nodes=[];
-    //const session = driver.session()
     const result = await session.run(
       'MATCH (:Usuario)-[r:CALIFICA]->(p:Pelicula {titulo: $movie}) return avg(r.score)',
       {movie: movie}
     )
-    //await driver.close()
 
     result.records.forEach(r =>{ nodes.push(r.get(0))});
 
@@ -421,11 +428,6 @@ router.get('/registerUser/:username/:password/:mail/:genero/:fecha', async (req,
         'CREATE (:Usuario {username: $username, password:$password, mail:$mail, genero:$genero, fechaDeNacimiento:$fecha});',
             {username, password, mail, genero, fecha}
       )
-
-      client.set(username+":password", password);
-      client.set(username+":mail", mail);
-      client.set(username+":fecha", fecha);
-      client.set(username+":genero", genero);
 
       result.records.forEach(r =>{ nodes.push(r.get(0))});
 
@@ -452,10 +454,12 @@ router.get('/editUser/:username/:password/:mail/:genero/:fecha', async (req, res
             {username, password, mail, genero, fecha}
       )
 
-      client.set(username+":password", password);
-      client.set(username+":mail", mail);
-      client.set(username+":fecha", fecha);
-      client.set(username+":genero", genero);
+      sess=req.session;
+      sess.username=username;
+      sess.password=password;
+      sess.mail=mail;
+      sess.fecha=fecha;
+      sess.genero=genero;
 
       result.records.forEach(r =>{ nodes.push(r.get(0))});
 
