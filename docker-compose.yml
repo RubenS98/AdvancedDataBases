@@ -1,21 +1,41 @@
-neo4j:
-  image: neo4j
-  restart: unless-stopped
-  ports:
-    - 7474:7474
-    - 7687:7687
-  volumes:
-    - ./db/dbms:/data/dbms
-    - ./db/import:/import
-  environment:
-    - NEO4J_AUTH=none
-server:
-  image: node:latest
-  working_dir: /Backend
-  command: npm run dev
-  ports:
-    - "9000:3000"
-  volumes:
-    - ./Backend:/Backend
-  links:
-    - neo4j
+services:
+  neo4j:
+    image: neo4j
+    restart: unless-stopped
+    ports:
+      - 7474:7474
+      - 7687:7687
+    volumes:
+      - ./db/dbms:/data/dbms
+      - ./db/import:/import
+    environment:
+      - NEO4J_AUTH=none
+    networks:
+              - webappnetwork
+  server:
+    image: node:latest
+    working_dir: /Backend
+    command: npm run dev
+    ports:
+      - "9000:3000"
+    volumes:
+      - ./Backend:/Backend
+    links:
+      - neo4j
+    networks:
+              - webappnetwork
+  client:
+    image: node:latest
+    working_dir: /FrontendDBA
+    entrypoint: ["npm", "start"]
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../FrontendDBA:/FrontendDBA
+    links:
+      - server
+    networks:
+              - webappnetwork
+networks:
+    webappnetwork:
+        driver: bridge
